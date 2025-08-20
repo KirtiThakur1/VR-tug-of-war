@@ -72,13 +72,13 @@ public void OnGrab()
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("Trigger enter called on " + gameObject.name);
-
-        if (!IsOwner)
-        {
-            Debug.Log("Not the owner, ignoring trigger");
-            return;
-        }
-
+        
+        //if (!IsOwner)
+        //{
+        //    Debug.Log("Not the owner, ignoring trigger");
+        //    return;
+        //}
+        
         if (other.CompareTag("Point1") && flag == 0)
         {
             Debug.Log("Detect collision with Point1");
