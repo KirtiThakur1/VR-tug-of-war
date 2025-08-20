@@ -45,21 +45,22 @@ public class GrabCollisionDetector : NetworkBehaviour
 
         flag = 0;
 
-        if (beatDetector != null)
+        if (IsOwner && IsClient && beatDetector != null)
             beatDetector.OnBeatDetected.AddListener(HandleBeatDetected);
 
     }
 
     void OnDisable()
    {
-        if (beatDetector != null)
+        if (IsOwner && IsClient && beatDetector != null)
             beatDetector.OnBeatDetected.RemoveListener(HandleBeatDetected);
     }
 
    // when detected whistle, call vibration
    public void HandleBeatDetected()
    {
-    StartCoroutine(Vibrate(beatVibrationAmplitude, beatVibrationDuration));
+        if (!IsOwner || !IsClient) return;  // only local owner vibrates
+        StartCoroutine(Vibrate(beatVibrationAmplitude, beatVibrationDuration));
    }
 
 public void OnGrab()
@@ -124,7 +125,7 @@ public void OnGrab()
         }
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     void MoveObjectServerRpc()
     {
         if (objectToMove != null)
@@ -193,6 +194,8 @@ public void OnGrab()
     /// <param name="duration">Duration in seconds</param>
     private IEnumerator Vibrate(float amplitude, float duration)
     {
+        if (!IsOwner || !IsClient) yield break;  // local guard
+
         if (!hapticInitialized)
             InitializeHapticDevice();
 
